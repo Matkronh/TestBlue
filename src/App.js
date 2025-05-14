@@ -1,3 +1,9 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LoginButton from './components/LoginButton';
+import PurchaseButton from './components/PurchaseButton';
+import MembersPage from './components/MembersPage';
+import './App.css';
+
 function HomePage() {
   return (
     <div className="app">
@@ -14,3 +20,17 @@ function HomePage() {
     </div>
   );
 }
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/members" element={<MembersPage />} />
+      </Routes>
+    </Router>
+  );
+}
+
+// Add this default export
+export default App;
