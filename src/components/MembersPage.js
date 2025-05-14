@@ -3,7 +3,6 @@ import memberstackDOM from '@memberstack/dom';
 import { useNavigate } from 'react-router-dom';
 
 const MembersPage = () => {
-  const [member, setMember] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -19,15 +18,12 @@ const MembersPage = () => {
         if (!member) {
           navigate('/');
         } else {
-          // Verify the member has access to this plan
           const hasAccess = await memberstack.hasPlanAccess({
             planId: process.env.REACT_APP_PRICE_ID
           });
           
           if (!hasAccess) {
             navigate('/');
-          } else {
-            setMember(member);
           }
         }
       } catch (error) {

@@ -1,15 +1,12 @@
-import { useEffect, useState } from 'react';
-import useMemberstack from '../hooks/useMemberstack';
+import memberstackDOM from '@memberstack/dom';
 
 const PurchaseButton = () => {
-  const memberstack = useMemberstack();
-  const [isLoading, setIsLoading] = useState(false);
-
   const handlePurchase = async () => {
-    if (!memberstack) return;
-    
-    setIsLoading(true);
     try {
+      const memberstack = memberstackDOM.init({
+        publicKey: process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY,
+      });
+
       await memberstack.openModal('CHECKOUT', {
         plans: [{
           priceId: process.env.REACT_APP_PRICE_ID,
@@ -18,18 +15,12 @@ const PurchaseButton = () => {
       });
     } catch (error) {
       console.error('Checkout error:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
   return (
-    <button 
-      className="purchase-button" 
-      onClick={handlePurchase}
-      disabled={isLoading}
-    >
-      {isLoading ? 'Processing...' : 'Buy this course for $19.99'}
+    <button className="purchase-button" onClick={handlePurchase}>
+      Buy this course for $19.99
     </button>
   );
 };
