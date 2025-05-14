@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 import memberstackDOM from '@memberstack/dom';
 
-// Initialize Memberstack
+// Initialize Memberstack only once
 memberstackDOM.init({
   publicKey: process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY,
   appId: process.env.REACT_APP_MEMBERSTACK_APP_ID

@@ -4,33 +4,62 @@ import { useNavigate } from 'react-router-dom';
 
 const MembersPage = () => {
   const [member, setMember] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const memberstack = memberstackDOM.init({
-      publicKey: process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY,
-    });
+    const checkMemberAccess = async () => {
+      try {
+        const memberstack = memberstackDOM.init({
+          publicKey: process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY,
+        });
 
-    memberstack.getCurrentMember()
-      .then(({ data: member }) => {
+        const { data: member } = await memberstack.getCurrentMember();
+        
         if (!member) {
           navigate('/');
         } else {
-          setMember(member);
+          // Verify the member has access to this plan
+          const hasAccess = await memberstack.hasPlanAccess({
+            planId: process.env.REACT_APP_PRICE_ID
+          });
+          
+          if (!hasAccess) {
+            navigate('/');
+          } else {
+            setMember(member);
+          }
         }
-      })
-      .catch(() => navigate('/'));
+      } catch (error) {
+        console.error('Access check error:', error);
+        navigate('/');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkMemberAccess();
   }, [navigate]);
 
-  if (!member) {
-    return <div className="loading">Loading...</div>;
+  if (loading) {
+    return <div className="loading">Verifying access...</div>;
   }
 
   return (
     <div className="members-content">
       <h1>Welcome to the Course!</h1>
       <p>Here's your exclusive content...</p>
-      {/* Add your course content here */}
+      <button 
+        onClick={async () => {
+          const memberstack = memberstackDOM.init({
+            publicKey: process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY,
+          });
+          await memberstack.logout();
+          navigate('/');
+        }}
+      >
+        Log Out
+      </button>
     </div>
   );
 };

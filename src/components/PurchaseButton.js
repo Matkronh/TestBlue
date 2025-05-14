@@ -1,17 +1,29 @@
+import { useEffect } from 'react';
 import memberstackDOM from '@memberstack/dom';
 
 const PurchaseButton = () => {
-  const handlePurchase = () => {
-    const memberstack = memberstackDOM.init({
+  useEffect(() => {
+    // Initialize Memberstack when component mounts
+    memberstackDOM.init({
       publicKey: process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY,
     });
+  }, []);
 
-    memberstack.openModal('CHECKOUT', {
-      plans: [{
-        priceId: process.env.REACT_APP_PRICE_ID,
-        quantity: 1
-      }]
-    });
+  const handlePurchase = async () => {
+    try {
+      const memberstack = memberstackDOM.init({
+        publicKey: process.env.REACT_APP_MEMBERSTACK_PUBLIC_KEY,
+      });
+
+      await memberstack.openModal('CHECKOUT', {
+        plans: [{
+          priceId: process.env.REACT_APP_PRICE_ID,
+          quantity: 1
+        }]
+      });
+    } catch (error) {
+      console.error('Checkout error:', error);
+    }
   };
 
   return (
